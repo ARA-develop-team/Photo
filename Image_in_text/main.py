@@ -12,6 +12,18 @@ def create_pix_list(pix):
     return pix_list
 
 
+def print_image(img):
+    for y in range(len(img.image_in_pix_list)):
+        print('')
+        for x in range(len(img.image_in_pix_list[0])):
+            col = (img.image_in_pix_list[y][x][0] + img.image_in_pix_list[y][x][1] + img.image_in_pix_list[y][x][2]) / 3
+            step = 256 / len(symbol_list)
+            for i in range(len(symbol_list)):
+                if col < (i + 1) * step:
+                    print(symbol_list[i], end='')
+                    break
+
+
 image = Image.open('kot.jpg')
 width = image.size[0]
 height = image.size[1]
@@ -19,6 +31,8 @@ pix = image.load()
 
 pix_list = create_pix_list(pix)
 image = class_text_image.Image(pix_list)
+
+symbol_list = ['─', '░', '▒', '▓', '█']  # from darker to lighter
 
 screen_size = [700, 700]
 screen_color = (0, 0, 0)
@@ -29,33 +43,20 @@ window.fill(screen_color)
 image.make_black_white()
 image.high_contrast()
 
-for y in range(len(image.image_in_pix_list)):
-    for x in range(len(image.image_in_pix_list[0])):
-        pygame.draw.circle(window, image.image_in_pix_list[y][x], (x, y), 1, 1)
+image.draw(window)
 
-image.decrease_extension_photo(40, 2)
-
-for y in range(len(image.image_in_pix_list)):
-    print('')
-    for x in range(len(image.image_in_pix_list[0])):
-        col = (image.image_in_pix_list[y][x][0] + image.image_in_pix_list[y][x][1] + image.image_in_pix_list[y][x][2]) / 3
-        if col < 51:
-            print('─', end='')
-        elif col < 102:
-            print('░', end='')
-        elif col < 153:
-            print('▒', end='')
-        elif col < 204:
-            print('▓', end='')
-        else:
-            print('█', end='')
+# image2 = image
+# image2.decrease_extension_photo(40, 2)
+#
+# image2.print(symbol_list)
 
 run = True
 while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-
+    window.fill(screen_color)
+    image.draw(window)
     pygame.display.flip()
 
 pygame.quit()

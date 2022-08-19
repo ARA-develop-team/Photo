@@ -1,11 +1,13 @@
+import pygame
+
 
 class Image(object):
 
-    def __init__(self, image_in_pix_list=None):
+    def __init__(self, image_in_pix_list):
         self.image_in_pix_list = image_in_pix_list
         self.save = []
         self.black_white = False
-        self.average_brightness = 0
+        self.average_brightness = self.get_average_brightness()
 
     def make_black_white(self):
         for y in range(len(self.image_in_pix_list)):
@@ -20,9 +22,10 @@ class Image(object):
 
     def high_contrast(self):
         self.average_brightness = self.get_average_brightness()
-        sr = 0
+        print(self.average_brightness)
         for y in range(len(self.image_in_pix_list)):
             for x in range(len(self.image_in_pix_list[0])):
+                sr = self.image_in_pix_list[y][x][0]
                 if sr < self.average_brightness:
                     sr = 0
                 else:
@@ -41,7 +44,7 @@ class Image(object):
                 sr = (r + g + b) // 3
                 brightness += sr
 
-        return brightness / len(self.image_in_pix_list) + len(self.image_in_pix_list[0])
+        return brightness / (len(self.image_in_pix_list) * len(self.image_in_pix_list[0]))
 
     def decrease_extension_photo(self, size_x, compression):
         # compression: 1 - без сжатия; >1 - с сжатием по y; <1 - с разширением по y
@@ -89,3 +92,19 @@ class Image(object):
 
     def load(self, save_number):
         self.image_in_pix_list = self.save[save_number]
+
+    def print(self, symbol_list):
+        for y in range(len(self.image_in_pix_list)):
+            print('')
+            for x in range(len(self.image_in_pix_list[0])):
+                col = (self.image_in_pix_list[y][x][0] + self.image_in_pix_list[y][x][1] + self.image_in_pix_list[y][x][2]) / 3
+                step = 256 / len(symbol_list)
+                for i in range(len(symbol_list)):
+                    if col < (i + 1) * step:
+                        print(symbol_list[i], end='')
+                        break
+
+    def draw(self, window):
+        for y in range(len(self.image_in_pix_list)):
+            for x in range(len(self.image_in_pix_list[0])):
+                pygame.draw.circle(window, self.image_in_pix_list[y][x], (x, y), 1, 1)
